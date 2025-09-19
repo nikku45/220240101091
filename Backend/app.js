@@ -17,7 +17,8 @@ app.use(cors());
 app.use(express.json());
 
 // Routes
-app.use("/url", urlRoutes);
+app.use("/api/url", urlRoutes);
+
 app.use("/",(req,res)=>{
  res.send("url shortner home api")
 })
