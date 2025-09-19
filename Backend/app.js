@@ -4,7 +4,7 @@ import mongoose from "mongoose";
 import cors from "cors";
 import dotenv from "dotenv";
 import urlRoutes from "./route/urlshortenRoutes.js";
-import { logger } from './middleware/logger.js'
+import { logger } from '../Logging Middleware/logger.js'
 
 
 
