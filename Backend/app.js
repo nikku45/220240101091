@@ -4,6 +4,7 @@ import mongoose from "mongoose";
 import cors from "cors";
 import dotenv from "dotenv";
 import urlRoutes from "./route/urlshortenRoutes.js";
+import { logger } from './middleware/logger.js'
 
 
 
@@ -15,6 +16,8 @@ const PORT = 5000;
 // Middlewares
 app.use(cors());
 app.use(express.json());
+app.use(logger);
+
 
 // Routes
 app.use("/api/url", urlRoutes);

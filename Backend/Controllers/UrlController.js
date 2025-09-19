@@ -56,7 +56,7 @@ import Url from "../models/Url.js";
 // @desc    Create short URL with expiry
 export const shortenUrl = async (req, res) => {
   try {
-    const { originalUrl, timeframe } = req.body; // timeframe in minutes/hours/days
+    const { originalUrl, timeframe=30 } = req.body; // timeframe in minutes/hours/days
 
     if (!originalUrl || !timeframe) {
       return res.status(400).json({ message: "Original URL and timeframe are required" });
@@ -73,7 +73,7 @@ export const shortenUrl = async (req, res) => {
       originalUrl,
       expiresAt,
     });
-
+    res.log(`Short URL created: ${shortId} -> ${originalUrl} (expires in ${timeframe} mins)`);
     return res.status(201).json({
       shortUrl: `${process.env.BASE_URL || "http://localhost:5000"}/api/url/${shortId}`,
       originalUrl: newUrl.originalUrl,
@@ -91,16 +91,21 @@ export const redirectUrl = async (req, res) => {
     const { shortId } = req.params;
     const urlEntry = await Url.findOne({ shortId });
 
-    if (!urlEntry) return res.status(404).json({ message: "URL not found" });
+    if (!urlEntry){
+     res.log(`Attempted access to invalid shortId: ${shortId}`);
+   
+     return res.status(404).json({ message: "URL not found" });
+    } 
 
     // Check expiry
     if (new Date() > urlEntry.expiresAt) {
+     res.log(`Expired link accessed: ${shortId}`);
       return res.status(410).json({ message: "URL expired" }); // 410 Gone
     }
 
     urlEntry.clicks++;
     await urlEntry.save();
-
+    res.log(`Redirected to: ${entry.originalUrl}`);
     return res.redirect(urlEntry.originalUrl);
   } catch (error) {
     console.error("Error redirecting:", error);
